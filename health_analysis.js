@@ -1,46 +1,98 @@
-let allConditions = [];
+const addPatientButton = document.getElementById("addPatient");
+const report = document.getElementById("report");
+const btnSearch = document.getElementById('btnSearch');
+const patients = [];
 
-fetch('health_analysis.json')
-  .then(response => response.json())
-  .then(data => {
-    allConditions = data.conditions;
-    renderConditions(allConditions);
-  })
-  .catch(err => console.error('Failed to load JSON:', err));
+function addPatient() {
+  const name = document.getElementById("name").value;
+  const gender = document.querySelector('input[name="gender"]:checked');
+  const age = document.getElementById("age").value;
+  const condition = document.getElementById("condition").value;
 
-function renderConditions(conditions) {
-  const container = document.getElementById('conditions-container');
-  container.innerHTML = '';
+  if (name && gender && age && condition) {
+    patients.push({ name, gender: gender.value, age, condition });
+    resetForm();
+    generateReport();
+  }
+}
 
-  if (conditions.length === 0) {
-    container.innerHTML = '<p>No conditions found.</p>';
-    return;
+function resetForm() {
+  document.getElementById("name").value = "";
+  document.querySelector('input[name="gender"]:checked').checked = false;
+  document.getElementById("age").value = "";
+  document.getElementById("condition").value = "";
+}
+
+function generateReport() {
+  const numPatients = patients.length;
+  const conditionsCount = {
+    Diabetes: 0,
+    Thyroid: 0,
+    "High Blood Pressure": 0,
+  };
+  const genderConditionsCount = {
+    Male: {
+      Diabetes: 0,
+      Thyroid: 0,
+      "High Blood Pressure": 0,
+    },
+    Female: {
+      Diabetes: 0,
+      Thyroid: 0,
+      "High Blood Pressure": 0,
+    },
+  };
+
+  for (const patient of patients) {
+    conditionsCount[patient.condition]++;
+    genderConditionsCount[patient.gender][patient.condition]++;
   }
 
-  conditions.forEach(condition => {
-    const card = document.createElement('div');
-    card.classList.add('card');
+  report.innerHTML = `Number of patients: ${numPatients}<br><br>`;
+  report.innerHTML += `Conditions Breakdown:<br>`;
+  for (const condition in conditionsCount) {
+    report.innerHTML += `${condition}: ${conditionsCount[condition]}<br>`;
+  }
 
-    const symptomsList = condition.symptoms.map(s => `<li>${s}</li>`).join('');
-    const preventionList = condition.prevention.map(p => `<li>${p}</li>`).join('');
-
-    card.innerHTML = `
-      <img src="${condition.imagesrc}" alt="${condition.name}" onerror="this.style.display='none'" />
-      <h2>${condition.name}</h2>
-      <h3>Symptoms</h3>
-      <ul>${symptomsList}</ul>
-      <h3>Prevention</h3>
-      <ul>${preventionList}</ul>
-      <h3>Treatment</h3>
-      <p>${condition.treatment}</p>
-    `;
-
-    container.appendChild(card);
-  });
+  report.innerHTML += `<br>Gender-Based Conditions:<br>`;
+  for (const gender in genderConditionsCount) {
+    report.innerHTML += `${gender}:<br>`;
+    for (const condition in genderConditionsCount[gender]) {
+      report.innerHTML += `&nbsp;&nbsp;${condition}: ${genderConditionsCount[gender][condition]}<br>`;
+    }
+  }
 }
 
-function filterConditions() {
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = allConditions.filter(c => c.name.toLowerCase().includes(query));
-  renderConditions(filtered);
+addPatientButton.addEventListener("click", addPatient);
+
+function searchCondition() {
+  const input = document.getElementById('conditionInput').value.toLowerCase();
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = '';
+
+  fetch('health_analysis.json')
+    .then(response => response.json())
+    .then(data => {
+      const condition = data.conditions.find(item => item.name.toLowerCase() === input);
+
+      if (condition) {
+        const symptoms = condition.symptoms.join(', ');
+        const prevention = condition.prevention.join(', ');
+        const treatment = condition.treatment;
+
+        resultDiv.innerHTML += `<h2>${condition.name}</h2>`;
+        resultDiv.innerHTML += `<img src="${condition.imagesrc}" alt="hjh">`;
+        resultDiv.innerHTML += `<p><strong>Symptoms:</strong> ${symptoms}</p>`;
+        resultDiv.innerHTML += `<p><strong>Prevention:</strong> ${prevention}</p>`;
+        resultDiv.innerHTML += `<p><strong>Treatment:</strong> ${treatment}</p>`;
+      } else {
+        resultDiv.innerHTML = 'Condition not found.';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      resultDiv.innerHTML = 'An error occurred while fetching data.';
+    });
 }
+
+btnSearch.addEventListener('click', searchCondition);
