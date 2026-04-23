@@ -1,34 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Health Analysis</title>
-  <link rel="stylesheet" href="health_analysis.css" />
+  <meta charset="UTF-8">
+  <title>Health Analysis Data</title>
+  <link rel="stylesheet" href="./health_analysis.css">
 </head>
 <body>
-  <header>
-    <h1>Health Analysis: Thyroid, Diabetes &amp; Blood Pressure</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="health_contact.html">Contact</a>
-    </nav>
-  </header>
+   <nav><h1>Health Analysis Census</h1>
+<ul>
+  <li><a href="./index.html" id="home">Главная </a></li>
+  <li><a href="./health_contact.html" id="contact">Связаться с нами </a></li>
+  <li><input type="text" id="conditionInput" placeholder="Введите состояние здоровья">  </li>
+  <li><button id='btnSearch'>Поиск</button>
+  </li>
 
-  <main>
-    <section id="search-section">
-      <input type="text" id="searchInput" placeholder="Search condition..." oninput="filterConditions()" />
-    </section>
-
-    <section id="conditions-container">
-      <!-- Cards rendered by JS -->
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2024 Health Analysis. All rights reserved.</p>
-  </footer>
-
-  <script src="health_analysis.js"></script>
+</ul>
+</nav>
+<div class="container">
+<div class="analysisForm">
+<h1>Анализ данных здравоохранения</h1>
+<div>
+<label for="name">Имя:</label>
+<input type="text" id="name">
+</div>
+<div>
+<label>Пол:</label>
+<label for="male">Мужской</label>
+<input type="radio" name="gender" id="male" value="Male">
+<label for="female">Женский</label>
+<input type="radio" name="gender" id="female" value="Female">
+</div>
+<div>
+<label for="age">Возраст:</label>
+<input type="number" id="age">
+</div>
+<div>
+<label for="condition">Состояние:</label>
+<select id="condition">
+  <option value="">Выберите состояние</option>
+  <option value="Diabetes">Диабет</option>
+  <option value="Thyroid">Щитовидная железа</option>
+  <option value="High Blood Pressure">Высокое кровяное давление</option>
+</select>
+</div>
+<button id="addPatient">Добавить пациента</button>
+<h2>Отчет об анализе</h2>
+<div id="report"></div>
+</div>
+<div class="searchCondition">
+    <div id="result"></div>
+</div>
+</div>
+<script src="./health_analysis.js"></script>
 </body>
 </html>
